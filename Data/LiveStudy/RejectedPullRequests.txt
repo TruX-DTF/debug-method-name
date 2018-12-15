@@ -1,0 +1,100 @@
+Project name: apache/drill
+Class path: org/apache/drill/exec/expr/DebugStringBuilder.java
+Renamed method:
+-    public DebugStringBuilder append( String s ) {
++    public DebugStringBuilder print( String s ) {
+          writer.print( s );
+          return this;
+     }
+
+Project name: apache/ambari
+Class path: org/apache/ambari/view/hive2/resources/uploads/parsers/RowIterator.java
+Renamed method:
+-    public LinkedList<String> extractHeaders() {
++    public LinkedList<String> getHeaders() {
+          return headers;
+     }
+
+Class path: org/apache/ambari/server/controller/utilities/PredicateBuilder.java
+Renamed method:
+-    public PredicateBuilder begin() {
++    public PredicateBuilder build() {
+          checkDone();
+          return new PredicateBuilder(this);
+     }
+
+Class path: org/apache/ambari/server/controller/internal/AbstractProviderModule.java
+Renamed method:
+-    public void onConfigurationChangedEvent(ClusterConfigChangedEvent event) {
++    public void clearConfigurationChangedEvent(ClusterConfigChangedEvent event) {
+           clusterJmxProtocolMap.clear();
+     }
+     
+Project name: apache/jackrabbit-oak
+Class path: org/apache/jackrabbit/oak/segment/standby/codec/GetReferencesResponseEncoder.java
+Renamed method:
+-    private static String serialize(String segmentId, Iterable<String> references) {
++    private static String format(String segmentId, Iterable<String> references) {
+          return segmentId + ":" + Joiner.on(",").join(references);
+     }
+
+Project name: apache/stanbol
+Class path: org/apache/stanbol/entityhub/ldpath/backend/AbstractBackend.java
+Renamed method:
+-    private void toLRU(Representation r){
++    private void addToLRU(Representation r){
+          lru.put(r.getId(), r);
+     }
+
+Project name: apache/fop
+Class path: org/apache/fop/afp/AFPResourceManager.java
+Renamed method:
+-    public void writeToStream() throws IOException {
++    public void closeStream() throws IOException {
+           streamer.close();
+     }
+
+Class path: org/apache/fop/fo/properties/TableBorderPrecedence.java
+Renamed method:
+-    public Property make(PropertyList propertyList) throws PropertyException {
++    public Property find(PropertyList propertyList) throws PropertyException {
+        FObj fo = propertyList.getFObj();
+        switch (fo.getNameId()) {
+        case Constants.FO_TABLE:
+            return num6;
+        case Constants.FO_TABLE_CELL:
+            return num5;
+        case Constants.FO_TABLE_COLUMN:
+            return num4;
+        case Constants.FO_TABLE_ROW:
+            return num3;
+        case Constants.FO_TABLE_BODY:
+            return num2;
+        case Constants.FO_TABLE_HEADER:
+            return num1;
+        case Constants.FO_TABLE_FOOTER:
+            return num0;
+        default:
+            return null;
+        }
+    }
+
+Project name: apache/xerces2-j
+Class path: org/apache/xml/serialize/OutputFormat.java
+Renamed method:
+     /**
+      * Returns true if indentation was specified.
+      */
+-    public boolean getIndenting()
++    public boolean isIndenting()
+     {
+         return ( _indent > 0 );
+     }
+
+Project name: apache/uima-uimaj
+Class path: org/apache/uima/caseditor/editor/FeatureStructureSelection.java
+Renamed method:
+-    public List<FeatureStructure> toList() {
++    public List<FeatureStructure> getList() {
+          return mFeatureStructures;
+     }
