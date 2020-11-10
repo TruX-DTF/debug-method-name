@@ -32,8 +32,6 @@ public class Step3 {
 				maxSize = Integer.parseInt(fileName.substring("TrainingData_Tokens_MaxSize=".length(), fileName.lastIndexOf(".csv")));
 			} else if (fileName.startsWith("TestingData_")) {
 				testingDataFile = file;
-//			} else if (fileName.startsWith("RenamedData_")) {
-//				renamedDataFile = file;
 			}
 		}
 
@@ -60,10 +58,6 @@ public class Step3 {
 		learner.setModelFile(modelFile);
 		learner.setTestingData(testingDataFile);
 		learner.extracteFeaturesWithCNNByLoadingModel();
-		
-//		learner.setTestingData(renamedDataFile);
-//		learner.extracteFeaturesWithCNNByLoadingModel();
-		
 	}
 
 }

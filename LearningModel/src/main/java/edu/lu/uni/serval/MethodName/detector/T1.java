@@ -12,6 +12,7 @@ import java.util.Locale;
 import java.util.Random;
 import java.util.Scanner;
 
+import edu.lu.uni.Configuration;
 import edu.lu.uni.serval.deeplearner.SentenceEncoder;
 import edu.lu.uni.serval.utils.FileHelper;
 import edu.lu.uni.serval.utils.ReturnType;
@@ -29,7 +30,7 @@ public class T1 {
 
 	public static void main(String[] args) throws IOException {
 		T1 learner = new T1();
-		String rootPath = "../OUTPUT_4/";
+		String rootPath = Configuration.ROOT_PATH;
 //		String inputPath = rootPath + "DL_Data/";
 //		String methodNameTokensFile = inputPath + "RenamedMethods/ParsedMethodNames.txt";
 		String outputPath = rootPath + "Detect_Data/bak/";

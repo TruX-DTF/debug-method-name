@@ -371,7 +371,7 @@ public class EvaluateActor extends UntypedActor {
 		
 		// Evaluate the performance of identifying inconsistent method names.
 //		System.out.println(topSimilarBodyMap.size() + "=======" + topSimilarNameMap.size());
-		int[] topNums = {1, 5, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100};
+		int[] topNums = {1, 5, 10, 20, 30, 40};//, 50, 60, 70, 80, 90, 100};
 		for (int topNum : topNums) {
 			if (topNum > this.topNum) topNum = this.topNum;
 			System.out.println("========Number of most similar methods: " + topNum + " =========");
@@ -380,7 +380,7 @@ public class EvaluateActor extends UntypedActor {
 			if (topNum == this.topNum) break;
 		}
 		
-		// Evaluate the performance of suggesting new names for identified inconsistent method names.
+//		// Evaluate the performance of suggesting new names for identified inconsistent method names.
 //		for (int topNum : topNums) {
 //			int numOfPredictTokens;
 //			if (topNum < 10) continue;
@@ -395,19 +395,19 @@ public class EvaluateActor extends UntypedActor {
 //			}
 //			if (topNum == this.topNum) break;
 //		}
-//		
-//		// Evaluate the performance of suggesting new names for inconsistent method names, when only considering the top-5 similar methods with normal ranking.
-//		System.out.println("========Number of most similar methods=========ONLY TOP-5");
-//		for (int i = 1; i <= Num_Of_Predict_Tokens; i ++) {
-//			if (i != 1 && i != 3) continue;
-//			System.out.println("========Number of Tokens: " + i + " =========");
-//			new DetectMethodNames().evaluate2(renamedOldMethodInfo, renamedNewMethodInfo, trainingMethodInfo, 
-//					topSimilarBodyMap, topSimilarNameMap, i, labels, 5, considerSynonyms, needAllSynonyms);
-//		}
-//		
-//		// Evaluate the performance of suggesting new names for inconsistent method names with the method proposed in 2016 ICML paper.
-//		int topNum = 10;
-//		new DetectMethodNames().evaluate3(renamedNewMethodInfo, trainingMethodInfo, topSimilarBodyMap, topNum, considerSynonyms, needAllSynonyms);
+		
+		// Evaluate the performance of suggesting new names for inconsistent method names, when only considering the top-10 similar methods with normal ranking.
+		System.out.println("========Number of most similar methods=========ONLY TOP-5");
+		for (int i = 1; i <= Num_Of_Predict_Tokens; i ++) {
+			if (i != 1 && i != 3) continue;
+			System.out.println("========Number of Tokens: " + i + " =========");
+			new DetectMethodNames().evaluate2(renamedOldMethodInfo, renamedNewMethodInfo, trainingMethodInfo, 
+					topSimilarBodyMap, topSimilarNameMap, i, labels, 10, considerSynonyms, needAllSynonyms);
+		}
+		
+		// Evaluate the performance of suggesting new names for inconsistent method names with the method proposed in 2016 ICML paper.
+		int topNum = 10;
+		new DetectMethodNames().evaluate3(renamedNewMethodInfo, trainingMethodInfo, topSimilarBodyMap, topNum, considerSynonyms, needAllSynonyms);
 	}
 
 	private void readExistingData() throws IOException {

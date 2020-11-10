@@ -39,19 +39,22 @@ import edu.lu.uni.serval.utils.FileHelper;
  * @author kui.liu
  *
  */
-public class App3 {
+public class MethodBodyCodeLearner {
 	
 	private static Logger log = LoggerFactory.getLogger(CNNFeatureExtractor.class);
 
 	public static void main(String[] args) throws FileNotFoundException, IOException, InterruptedException {
-		String rootPath = args[0];//"../OUTPUT_3/DL_Data/";
-		int nEpochs = Integer.valueOf(args[1]);//1, 10, 20
+		int nEpochs = 1;//Integer.valueOf(args[0]);//1, 10, 20
+		String rootPath = Configuration.DL_DATA_PATH;
+		String inputPath = Configuration.DL_INPUT_DATA_PATH;
+		String outputPath = rootPath + "DLoutput_" + nEpochs + "/";
+		File modelFile = new File(outputPath + "CNNoutput.zip");
 		
-		String inputPath = rootPath + "DLinput/";
+		int batchSize = Configuration.BATCH_SIZE;
+		
 		File[] files = new File(inputPath).listFiles();
 		File trainingDataFile = null;
 		File testingDataFile = null;
-//		File renamedDataFile = null;
 		int maxSize = 0;
 		
 		for (File file : files) {
@@ -59,39 +62,37 @@ public class App3 {
 			if (fileName.startsWith("TrainingData_")) {
 				trainingDataFile = file;
 				maxSize = Integer.parseInt(fileName.substring("TrainingData_Tokens_MaxSize=".length(), fileName.lastIndexOf(".csv")));
-			} else if (fileName.startsWith("TestingData_")) {
+			} else if (fileName.startsWith("RenamedData_")) {
 				testingDataFile = file;
-//			} else if (fileName.startsWith("RenamedData_")) {
-//				renamedDataFile = file;
 			}
 		}
-
-		String outputPath = rootPath + "DLoutput_" + nEpochs + "/";
-		FileHelper.deleteDirectory(outputPath);
 		
-		int sizeOfTokensVector = maxSize;
-		int sizeOfEmbeddedVector = 300;
-		int batchSize = Configuration.BATCH_SIZE;
-		int sizeOfFeatureVector = Configuration.SIZE_OF_FEATURE_VECTOR;
-		
-		
-		CNNFeatureExtractor learner = new App3().new CNNFeatureExtractor(trainingDataFile, sizeOfTokensVector, sizeOfEmbeddedVector, batchSize, sizeOfFeatureVector);
-		learner.setNumberOfEpochs(nEpochs);
-		learner.setSeed(123);
-		learner.setNumOfOutOfLayer1(20);
-		learner.setNumOfOutOfLayer2(50);
-		learner.setOutputPath(outputPath);
-		
-		learner.extracteFeaturesWithCNN();
-		
-		File modelFile = new File(outputPath + "CNNoutput.zip");
-		learner.setModelFile(modelFile);
-		learner.setTestingData(testingDataFile);
-		learner.extracteFeaturesWithCNNByLoadingModel();
-		
-//		learner.setTestingData(renamedDataFile);
-//		learner.extracteFeaturesWithCNNByLoadingModel();
-		
+		if (modelFile.exists()) {
+			CNNFeatureExtractor learner = new MethodBodyCodeLearner().new CNNFeatureExtractor(batchSize);
+			learner.setOutputPath(outputPath);
+			learner.setModelFile(modelFile);
+			learner.setTestingData(testingDataFile);
+			learner.extracteFeaturesWithCNNByLoadingModel();
+		} else {
+			FileHelper.deleteDirectory(outputPath);
+			
+			int sizeOfTokensVector = maxSize;
+			int sizeOfEmbeddedVector = 300;
+			int sizeOfFeatureVector = Configuration.SIZE_OF_FEATURE_VECTOR;
+			
+			CNNFeatureExtractor learner = new MethodBodyCodeLearner().new CNNFeatureExtractor(trainingDataFile, sizeOfTokensVector, sizeOfEmbeddedVector, batchSize, sizeOfFeatureVector);
+			learner.setNumberOfEpochs(nEpochs);
+			learner.setSeed(123);
+			learner.setNumOfOutOfLayer1(20);
+			learner.setNumOfOutOfLayer2(50);
+			learner.setOutputPath(outputPath);
+			
+			learner.extracteFeaturesWithCNN();
+			
+			learner.setModelFile(modelFile);
+			learner.setTestingData(testingDataFile);
+			learner.extracteFeaturesWithCNNByLoadingModel();
+		}
 	}
 	
 	class CNNFeatureExtractor {
@@ -116,6 +117,10 @@ public class App3 {
 		private String outputPath;
 		private File testingData;
 		private File modelFile;
+		
+		public CNNFeatureExtractor(int batchSize) {
+			this.batchSize = batchSize;
+		}
 		
 		public CNNFeatureExtractor(File inputFile, int sizeOfVector, int sizeOfTokenVec, int batchSize, int sizeOfFeatureVector) {
 			this.inputFile = inputFile;

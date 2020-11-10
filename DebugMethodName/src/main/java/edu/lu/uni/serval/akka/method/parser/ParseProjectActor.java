@@ -85,10 +85,7 @@ public class ParseProjectActor extends UntypedActor {
 					javaFiles = Arrays.asList(content.trim().split("\n"));
 					int size = javaFiles.size();
 					if (size < numberOfWorkers) {
-						numberOfWorkers = numberOfWorkers / 2;
-						if (size < numberOfWorkers) {
-							numberOfWorkers = size;
-						}
+						numberOfWorkers = size;
 					}
 					System.out.println("Java Files: " + size);
 					int average = size / numberOfWorkers;
@@ -115,7 +112,7 @@ public class ParseProjectActor extends UntypedActor {
 					List<File> javaFiles = getAllFiles(new File(project), ".java", project.length() + 1);
 					int size = javaFiles.size();
 					if (size < numberOfWorkers) {
-						numberOfWorkers = numberOfWorkers / 10;
+						numberOfWorkers = size;
 					}
 					
 					int average = size / numberOfWorkers;
@@ -211,6 +208,7 @@ public class ParseProjectActor extends UntypedActor {
 				file.delete();
 			}
 		}
+		new File(outputPath + type + "/").delete();
 	}
 
 }

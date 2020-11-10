@@ -8,7 +8,7 @@ import java.util.Map;
 
 import edu.lu.uni.Configuration;
 import edu.lu.uni.deeplearning.extractor.CNNFeatureExtractor;
-import edu.lu.uni.serval.dlMethods.liveStudy.TokensEmbedder;
+import edu.lu.uni.serval.dlMethods.TokensEmbedder;
 import edu.lu.uni.serval.utils.FileHelper;
 
 /**
@@ -21,8 +21,8 @@ public class App1 {
 	private static int maxSize = 0;
 		
 	public static void main(String[] args) throws IOException, InterruptedException {
-		String rootPath = "../OUTPUT_4/";
-		String inputPath = rootPath + "DL_Data/";
+		String rootPath = Configuration.ROOT_PATH;
+		String inputPath = Configuration.DL_DATA_PATH;
 		String trainingData = inputPath + "SelectedData/SelectedMethodTokens.txt";  // SelectedSizes.csv, SelectedMethodTokens.txt, SelectedMethodInfo.txt
 		String testingData = inputPath + "RenamedMethods/MethodTokens.txt"; // MethodTokens.txt, MethodInfo.txt, ParsedMethodNames.txt
 		String outputPath = rootPath + "Detect_Data/";
@@ -63,7 +63,6 @@ public class App1 {
 		learner.setModelFile(modelFile);
 		learner.setTestingData(testingDataFile);
 		learner.extracteFeaturesWithCNNByLoadingModel();
-		
 		
 		// TrainingFeatures: outputPath + "1_CNNoutput.csv"
 		// TestingFeatures: outputPath + "TestingFeatures_"...

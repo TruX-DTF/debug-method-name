@@ -1,11 +1,10 @@
 package edu.lu.uni.serval.renamed.methods;
 
-import java.io.File;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.StringReader;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.NoHeadException;
@@ -34,32 +33,26 @@ public class CommitDiffs {
 	private static Logger log = LoggerFactory.getLogger(CommitDiffs.class);
 	
 	public static void main(String[] args) {
-		String rootPath = Configuration.JAVA_REPOS_PATH;
-		File[] files = new File(rootPath).listFiles();
-		System.out.println(files.length);
-		Map<String, String> projects = new HashMap<>();
-		for (File file : files) {
-			if (!file.isDirectory()) continue;
-			String fileName = file.getName();
-			File[] subFiles = file.listFiles();
-			List<String> subFilePaths = new ArrayList<>();
-			for (File subFile : subFiles) {
-				if (subFile.isDirectory())
-					subFilePaths.add(subFile.getPath() + "/.git");
-			}
-			if (subFilePaths.size() != 1) {
-				System.out.println("======" + file.getPath());
-			} else {
-				projects.put(fileName, subFilePaths.get(0));
-			}
+		List<String> projectList = readList(Configuration.JAVA_REPO_NAMES_FILE);
+		for (String project : projectList) {
+			traverseGitRepos(project, Configuration.JAVA_REPOS_PATH + project + "/.git");
 		}
-		
-		for (Map.Entry<String, String> entry : projects.entrySet()) {
-			// get all renamed method names as testing data.
-			String projectName = entry.getKey();
-			String projectGit = entry.getValue();
-			traverseGitRepos(projectName, projectGit);
+	}
+
+	public static List<String> readList(String fileName) {
+		List<String> list = new ArrayList<>();
+		String content = FileHelper.readFile(fileName);
+		BufferedReader reader = new BufferedReader(new StringReader(content));
+		try {
+			String line = null;
+			while ((line = reader.readLine()) != null) {
+				list.add(line);
+			}
+			reader.close();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
+		return list;
 	}
 
 	public static void traverseGitRepos(String projectName, String projectGit) {
@@ -67,6 +60,7 @@ public class CommitDiffs {
 		String previousFilesPath = Configuration.COMMIT_DIFF_PATH + projectName + "/prevFiles/";
 		FileHelper.createDirectory(revisedFilesPath);
 		FileHelper.createDirectory(previousFilesPath);
+		FileHelper.deleteDirectory(Configuration.COMMIT_DIFF_PATH + projectName + "/DiffEntries/");
 		GitRepository gitRepo = new GitRepository(projectGit, revisedFilesPath, previousFilesPath);
 		try {
 			gitRepo.open();

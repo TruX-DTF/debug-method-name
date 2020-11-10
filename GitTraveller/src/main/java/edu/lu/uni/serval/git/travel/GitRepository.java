@@ -903,7 +903,7 @@ public class GitRepository {
 				}
 			}
 		}
-		log.info("All modified java files: " + a + "=========All Non-test java files:" + b + "==========Unchanged non-test java files: " + c);
+		log.debug("All modified java files: " + a + "=========All Non-test java files:" + b + "==========Unchanged non-test java files: " + c);
 	}
 	
 	public void createFilesForGumTree(String outputPath, List<CommitDiffEntry> gtDiffentries) throws MissingObjectException, IOException	{
@@ -968,7 +968,7 @@ public class GitRepository {
 				}
 			}
 		}
-		log.info("All modified java files: " + a + "=========All Non-test java files:" + b + "==========Unchanged non-test java files: " + c);
+		log.debug("All modified java files: " + a + "=========All Non-test java files:" + b + "==========Unchanged non-test java files: " + c);
 	}
 	
 	private String createFileName(String fileName, String commitId, String parentCommitId) {

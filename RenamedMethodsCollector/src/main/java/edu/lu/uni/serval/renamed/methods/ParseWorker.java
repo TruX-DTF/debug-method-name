@@ -86,7 +86,7 @@ public class ParseWorker extends UntypedActor {
 				// schedule the work
 				final Future<?> future = executor.submit(new RunnableParser(prevFile, revFile, diffentryFile, parser));
 				try {
-					future.get(120L, TimeUnit.SECONDS);
+					future.get(150L, TimeUnit.SECONDS);
 					// project_name : old_commit_id : new_commit_id : file_path : old_method_name : new_method_name : old_line : new_line : return_type : arguments : tokens.
 					List<String> renamedMethods = parser.getRenamedMethods();
 					if (renamedMethods.isEmpty()) {
@@ -124,7 +124,7 @@ public class ParseWorker extends UntypedActor {
 			builder.setLength(0);
 			FileHelper.outputToFile(OUTPUT_PATH2 + "MethodBodies_" + id + ".txt", methodBodiesBuilder, true);
 			methodBodiesBuilder.setLength(0);
-			log.info("Worker #" + id +" Finish of parsing " + counter + " renamed methods...");
+			log.debug("Worker #" + id +" Finish of parsing " + counter + " renamed methods...");
 			this.getSender().tell("END", getSelf());
 		} else {
 			unhandled(message);

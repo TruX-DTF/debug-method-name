@@ -1,11 +1,14 @@
 package edu.lu.uni.serval;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import edu.lu.uni.serval.akka.JavaFile.getter.JavaFileGetter;
 import edu.lu.uni.serval.akka.method.parser.MultipleShreadParser;
 import edu.lu.uni.serval.method.parser.MethodParser;
 import edu.lu.uni.serval.method.parser.util.Distribution;
@@ -32,21 +35,22 @@ public class MainParser {
 			 *  Choice 2. Parse Java code methods with multiple threads.
 			 *  One thread is used to prase one project.
 			 */
-			parser.parseMethodsWithMultipleThreads();
-			Distribution dis = new Distribution();
-			List<File> files = FileHelper.getAllFiles(Configuration.TOKENIZED_METHODS_PATH + "sizes/", ".csv");
-			int sheetNo = 1;
-			for (File file : files) {
-				dis.readDistribution(file, sheetNo);
-				sheetNo ++;
-			}
+//			parser.parseMethodsWithMultipleThreads();
+//			Distribution dis = new Distribution();
+//			List<File> files = FileHelper.getAllFiles(Configuration.TOKENIZED_METHODS_PATH + "sizes/", ".csv");
+//			int sheetNo = 1;
+//			for (File file : files) {
+//				dis.readDistribution(file, sheetNo);
+//				sheetNo ++;
+//			}
 			
 			/* 
 			 * Choice 3. Parse Java code methods with multiple threads.
 			 * The input is all obtained Java code files of all Java projects.
 			 */
-//			String allJavaFilesFile = Configuration.JAVA_FILES_FILE;
-//			parser.parseMethodsWithMultipleThreads(allJavaFilesFile);
+			String allJavaFilesFile = Configuration.JAVA_FILES_FILE;
+			JavaFileGetter.main(null);
+			parser.parseMethodsWithMultipleThreads(allJavaFilesFile);
 			
 			/*
 			 * Choice 4. Parse Java code methods with multiple threads.
@@ -62,7 +66,7 @@ public class MainParser {
 //			String projectName = projectNames.get(i);
 //			String project = Configuration.JAVA_FILES_PATH + projectName + ".txt";
 //			if (! new File(project).exists()) {
-//				return;
+//				project = Configuration.JAVA_REPOS_PATH + projectName;
 //			}
 //			parser.parseMethodsWithMultipleThreads(project, projectName);
 		} catch (IOException e) {
@@ -129,11 +133,19 @@ public class MainParser {
 	}
 	
 	private static List<String> readProjects() throws IOException {
-		List<String> projects = new ArrayList<>();
-		String path = Configuration.JAVA_REPO_NAMES_FILE;
-		String content = FileHelper.readFile(path);
-		projects = Arrays.asList(content.trim().split("\n"));
-		return projects;
+		String content = FileHelper.readFile(Configuration.JAVA_REPO_NAMES_FILE);
+		List<String> list = new ArrayList<>();
+		BufferedReader reader = new BufferedReader(new StringReader(content));
+		try {
+			String line = null;
+			while ((line = reader.readLine()) != null) {
+				list.add(line);
+			}
+			reader.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return list;
 	}
 	
 }

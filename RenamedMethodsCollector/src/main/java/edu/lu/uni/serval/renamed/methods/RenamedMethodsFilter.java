@@ -360,12 +360,21 @@ public class RenamedMethodsFilter {
 					typoMethodTokensSizeBuilder.append(tokens.length).append("\n");
 				}
 			}
-			scanner.close();
-			fis.close();
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
+		} finally {
+			if (scanner != null) {
+				scanner.close();
+				scanner = null;
+			}
+			if (fis != null) {
+				try {
+					fis.close();
+					fis = null;
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
 		}
 		FileHelper.outputToFile(dataPath + "ActualRenamed/MethodTokens.txt", renamedMethodsBuilder, false);
 		renamedMethodsBuilder.setLength(0);

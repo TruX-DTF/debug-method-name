@@ -11,9 +11,8 @@ import edu.lu.uni.serval.Configuration;
 public class JavaFileGetter {
 
 	public static void main(String[] args) {
-		String projectsPath = Configuration.JAVA_REPOS_PATH;
-		int numberOfWorkers = 1000;
-		MultipleThreadsJavaFileGetter getter = new MultipleThreadsJavaFileGetter(projectsPath, numberOfWorkers);
+		int numberOfWorkers = 430;
+		MultipleThreadsJavaFileGetter getter = new MultipleThreadsJavaFileGetter(Configuration.JAVA_REPOS_PATH, numberOfWorkers);
 		getter.getJavaFiles();
 	}
 

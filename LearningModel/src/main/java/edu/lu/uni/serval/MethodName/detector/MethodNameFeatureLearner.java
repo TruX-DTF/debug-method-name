@@ -12,6 +12,7 @@ import java.util.Locale;
 import java.util.Random;
 import java.util.Scanner;
 
+import edu.lu.uni.Configuration;
 import edu.lu.uni.serval.deeplearner.SentenceEncoder;
 import edu.lu.uni.serval.utils.FileHelper;
 import edu.lu.uni.serval.utils.ReturnType;
@@ -29,9 +30,9 @@ public class MethodNameFeatureLearner {
 
 	public static void main(String[] args) throws IOException {
 		MethodNameFeatureLearner learner = new MethodNameFeatureLearner();
-		String rootPath = "../OUTPUT_4/";
-		String inputPath = rootPath + "DL_Data/";
-		String methodNameTokensFile = inputPath + "RenamedMethods/ParsedMethodNames.txt";
+		String rootPath = Configuration.ROOT_PATH;
+		String inputPath = Configuration.DL_DATA_PATH;
+		String methodNameTokensFile = Configuration.RENAMED_METHODS_PATH + "ParsedMethodNames.txt";
 		String outputPath = rootPath + "Detect_Data/";
 		// Selecting data for method name feature learning.
 		String testingMethodNamesFile = outputPath + "TestingMethodNames.txt";
@@ -144,8 +145,10 @@ public class MethodNameFeatureLearner {
 		FileHelper.outputToFile(featureLearningData1, content, true);
 		FileHelper.outputToFile(featureLearningData1 + ".bak", contentBak, true);
 		
-		FileHelper.outputToFile(featureLearningData2, returnTypeBuilder, false);
-		FileHelper.outputToFile(featureLearningData2 + ".bak", returnTypeBuilder, false);
+		if (featureLearningData2 != null) {
+			FileHelper.outputToFile(featureLearningData2, returnTypeBuilder, false);
+			FileHelper.outputToFile(featureLearningData2 + ".bak", returnTypeBuilder, false);
+		}
 		returnTypeBuilder.setLength(0);
 		StringBuilder returnTypeBuilderBak = new StringBuilder();
 
@@ -163,8 +166,11 @@ public class MethodNameFeatureLearner {
 			index ++;
 		}
 		reader.close();
-		FileHelper.outputToFile(featureLearningData2, returnTypeBuilder, true);
-		FileHelper.outputToFile(featureLearningData2 + ".bak", returnTypeBuilderBak, true);
+		
+		if (featureLearningData2 != null) {
+			FileHelper.outputToFile(featureLearningData2, returnTypeBuilder, true);
+			FileHelper.outputToFile(featureLearningData2 + ".bak", returnTypeBuilderBak, true);
+		}
 	}
 
 	private List<String> readTokensList(String content) throws IOException {
@@ -201,7 +207,7 @@ public class MethodNameFeatureLearner {
 		fis.close();
 
 		FileHelper.outputToFile(featureLearningData1, builder, appended);
-		FileHelper.outputToFile(featureLearningData2, returnTypeBuilder, appended);
+		if (featureLearningData2 != null) FileHelper.outputToFile(featureLearningData2, returnTypeBuilder, appended);
 	}
 	
 	public void learnFeatures(File inputFile, String outputFileName) throws FileNotFoundException {

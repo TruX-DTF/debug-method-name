@@ -37,8 +37,8 @@ import org.slf4j.LoggerFactory;
 
 import edu.lu.uni.Configuration;
 import edu.lu.uni.serval.deeplearner.Word2VecEncoder;
-import edu.lu.uni.serval.dlMethods.liveStudy.TokensEmbedder;
-import edu.lu.uni.serval.dlMethods.liveStudy.TokensEmbedder.SingleVectorizer;
+import edu.lu.uni.serval.dlMethods.TokensEmbedder;
+import edu.lu.uni.serval.dlMethods.TokensEmbedder.SingleVectorizer;
 import edu.lu.uni.serval.utils.FileHelper;
 
 /**
@@ -47,11 +47,12 @@ import edu.lu.uni.serval.utils.FileHelper;
  * @author kui.liu
  *
  */
+@Deprecated
 public class MethodNameFeatureLearner2 {
 	
 	public static void main(String[] args) throws IOException, InterruptedException {
 		MethodNameFeatureLearner2 learner = new MethodNameFeatureLearner2();
-		String rootPath = "../OUTPUT_4/";
+		String rootPath = Configuration.ROOT_PATH;
 		String outputPath = rootPath + "Detect_Data/";
 		String featureLearningData1 = outputPath + "FeatureLearningData1.txt"; // without return type.
 		String featureLearningData2 = outputPath + "FeatureLearningData2.txt"; // with return type.

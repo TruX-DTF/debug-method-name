@@ -1,15 +1,10 @@
 package edu.lu.uni.serval.renamed.methods;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.IOException;
-import java.io.StringReader;
-import java.util.ArrayList;
 import java.util.List;
 
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
-import edu.lu.uni.serval.utils.FileHelper;
 
 /**
  * Collect renamed methods from the commit history of a Java repo.
@@ -24,7 +19,7 @@ public class RenamedMethodsCollector {
 	
 	public static void main(String[] args) {
 		System.out.println("Argus: " + args[0]);
-		List<String> projectList = readList(Configuration.JAVA_REPO_NAMES_FILE);
+		List<String> projectList = CommitDiffs.readList(Configuration.JAVA_REPO_NAMES_FILE);
 		int index;
 		try {
 			index = Integer.valueOf(args[0]);
@@ -62,22 +57,6 @@ public class RenamedMethodsCollector {
 			String outputPath = OUTPUT_DATA_PATH + projectName + "/";
 			parseRenamedMethods(filePath, outputPath);
 		}
-	}
-
-	private static List<String> readList(String fileName) {
-		List<String> list = new ArrayList<>();
-		String content = FileHelper.readFile(fileName);
-		BufferedReader reader = new BufferedReader(new StringReader(content));
-		try {
-			String line = null;
-			while ((line = reader.readLine()) != null) {
-				list.add(line);
-			}
-			reader.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return list;
 	}
 
 	private static void parseRenamedMethods(String inputProject, String outputPath) {

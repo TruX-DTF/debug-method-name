@@ -52,7 +52,7 @@ public class JavaFileGetActor extends UntypedActor {
 			File[] files = new File(msg).listFiles();
 			for (File file : files) {
 				if (file.isDirectory()) {
-					projects.add(file.listFiles()[0]);
+					projects.add(file);
 				}
 			}
 			
@@ -79,7 +79,6 @@ public class JavaFileGetActor extends UntypedActor {
 			if (counter >= numberOfWorkers) {
 				mergeData();// merge data.
 				logger.info("All workers finished their work...");
-				
 				this.getContext().stop(travelRouter);
 				this.getContext().stop(getSelf());
 				this.getContext().system().shutdown();

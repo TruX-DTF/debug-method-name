@@ -1,4 +1,4 @@
-package edu.lu.uni.serval.dlMethods.DataPreparer;
+package edu.lu.uni.serval.dlMethods.DataPrepare;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;

@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+import edu.lu.uni.Configuration;
+
 /**
  * Compute the number of renamed methods that are the same as their latest versions.
  * @author kui.liu
@@ -15,9 +17,8 @@ public class RenamedMethods {
 
 	public static void main(String[] args) {
 		try {
-			String rootPath = "../OUTPUT_4/";
-			String inputPath = rootPath + "tokenization/";
-			String renamedMethodsPath = rootPath + "RenamedMethods/";
+			String inputPath = Configuration.TOKENIZED_METHODS_PATH;
+			String renamedMethodsPath = Configuration.RENAMED_METHODS_PATH;
 			selectMethod(inputPath, renamedMethodsPath);
 		} catch (IOException e) {
 			e.printStackTrace();

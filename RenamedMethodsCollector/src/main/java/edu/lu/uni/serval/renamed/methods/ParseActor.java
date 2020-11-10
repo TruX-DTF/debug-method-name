@@ -29,7 +29,7 @@ public class ParseActor extends UntypedActor {
 	int number = 0;
 	int startIndex = 0;
 	int endIndex = 0;
-	
+	//lucene-solr
 	public ParseActor(String inputProjectPath, String outputPath) {
 		this.inputProjectPath = inputProjectPath;
 		projectName = inputProjectPath.substring(inputProjectPath.lastIndexOf("/") + 1);
@@ -93,11 +93,7 @@ public class ParseActor extends UntypedActor {
 			int size = allRevFiles.size();
 			
 			if (size < numberOfWorkers) {
-				numberOfWorkers = numberOfWorkers / 10;
-				if (size < numberOfWorkers) {
-					numberOfWorkers = numberOfWorkers / 5;
-					if (size < numberOfWorkers) numberOfWorkers = 1;
-				}
+				numberOfWorkers = size;
 			}
 			int average = size / numberOfWorkers;
 			int remainder = size % numberOfWorkers;

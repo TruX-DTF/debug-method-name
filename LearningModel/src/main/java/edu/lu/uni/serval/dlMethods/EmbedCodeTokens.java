@@ -2,6 +2,7 @@ package edu.lu.uni.serval.dlMethods;
 
 import java.io.IOException;
 
+import edu.lu.uni.Configuration;
 import edu.lu.uni.serval.utils.FileHelper;
 
 /**
@@ -10,19 +11,19 @@ import edu.lu.uni.serval.utils.FileHelper;
  * @author kui.liu
  *
  */
-public class App2 {
+public class EmbedCodeTokens {
 
 	public static void main(String[] args) throws IOException {
-		String inputPath = args[0];//"../OUTPUT_4/DL_Data/";
-		String outputPath = args[1];//"../OUTPUT_4/DL_Data/DLinput/";
-		boolean mergeData = Boolean.valueOf(args[2]);
+		String inputPath = Configuration.DL_DATA_PATH;
+		String outputPath = Configuration.DL_INPUT_DATA_PATH;
 		FileHelper.deleteDirectory(outputPath);
+		
 		TokensEmbedder embedder = new TokensEmbedder();
 		embedder.inputPath = inputPath;
 		embedder.outputPath = outputPath;
-		embedder.mergeData(mergeData);
+		embedder.mergeData(false);
 		embedder.embedTokens();
-		embedder.vectorizedData(mergeData);
+		embedder.vectorizedData(true);
 	}
 
 }

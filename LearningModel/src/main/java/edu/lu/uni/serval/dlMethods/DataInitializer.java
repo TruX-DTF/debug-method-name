@@ -5,17 +5,13 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.StringReader;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.Random;
 import java.util.Scanner;
 
 import edu.lu.uni.Configuration;
-import edu.lu.uni.serval.dlMethods.DataPreparer.RenamedMethodSelector;
+import edu.lu.uni.serval.dlMethods.DataPrepare.RenamedMethodSelector;
 import edu.lu.uni.serval.utils.Distribution;
 import edu.lu.uni.serval.utils.Distribution.MaxSizeType;
 import edu.lu.uni.serval.utils.FileHelper;
@@ -24,8 +20,6 @@ import edu.lu.uni.serval.utils.FileHelper;
  * Figure out the common first tokens of all method names.
  * Select the methods of which method names start with these common first tokens.
  * 
- * Training data: 90%.
- * Testing data: 10%.
  * @author kui.liu
  *
  */
@@ -35,7 +29,8 @@ public class DataInitializer {
 	public int MIN_SIZE = 0;    // The minimum size of vectors.
 	
 	public String inputPath;
-	public String outputPath;
+	public String outputPath1;
+	public String outputPath2;
 	public String renamedMethodsPath;
 	
 	// First token list of all methods.
@@ -72,10 +67,10 @@ public class DataInitializer {
 	List<Integer> furtherSelecteRenamedMethodIndexes = new ArrayList<>();
 	
 	public void initializeData() throws IOException {
-//		// Common first tokens of all methods.
+		// Common first tokens of all methods.
 //		CommonFirstTokens cft = new CommonFirstTokens();
 //		cft.inputPath = this.inputPath;
-//		cft.outputPath = this.outputPath;
+//		cft.outputPath = this.outputPath1;
 //		cft.QUANTITY = this.QUANTITY;
 //		// Read the distribution of first tokens to get the common first tokens.
 //		cft.readTokens();
@@ -86,21 +81,31 @@ public class DataInitializer {
 //		this.commonFirstTokens = cft.commonFirstTokens;
 		
 		
+		File sizesFile = new File(Configuration.TOKENIZED_METHODS_PATH + "sizes.csv");
+		if (!sizesFile.exists()) {
+			// Merge sizes files.
+			List<String> projects = DataPreparer.readProjects();
+			for (String project : projects) {
+				String sizeFile = Configuration.TOKENIZED_METHODS_PATH + project + "/sizes.csv";
+				if (! new File(sizeFile).exists()) continue;
+				FileHelper.outputToFile(sizesFile, FileHelper.readFile(sizeFile), true);
+			}
+		}
+		
 		// Get the threshold of sizes of method token vectors
-		List<Integer> sizesList = readSizes("sizes.csv");//TODO
+		List<Integer> sizesList = readSizes(sizesFile);
 		maxSize = Distribution.computeMaxSize(MaxSizeType.UpperWhisker, sizesList);
 		if (maxSize % 2 != 0) {
 			maxSize += 1;
 		}
 		
-
 		// Select the renamed methods of which names start with one of the common first token.
 		RenamedMethodSelector rms = new RenamedMethodSelector();
 		rms.renamedMethodsPath = renamedMethodsPath;
 		rms.selectRenamedMethods(null, MIN_SIZE, maxSize);
 		this.methodInfoOfRenamedMethods = rms.methodInfoOfRenamedMethods;
 		this.tokenVectorsOfRenamedMethods = rms.tokenVectorsOfRenamedMethods;
-		this.parsedRenamedMethodNames = rms.parsedRenamedMethodNames;
+		this.parsedRenamedMethodNames = rms.parsedRenamedMethodNames; // oldName@newName
 		this.selecteRenamedMethodIndexes = rms.indexesOfSelectedMethods;	
 	}
 
@@ -111,7 +116,7 @@ public class DataInitializer {
 	 */
 	public void selectMethod() throws IOException {
 		String tokensFile = inputPath + "tokens.list";
-		this.sizesListOfAllMethodBodyTokenVectors = readSizes(inputPath + "sizes.csv");
+		this.sizesListOfAllMethodBodyTokenVectors = readSizes(new File(inputPath + "sizes.csv"));
 		
 		StringBuilder tokensBulder = new StringBuilder();
 		StringBuilder methodInfoBuilder = new StringBuilder();
@@ -180,9 +185,9 @@ public class DataInitializer {
 					counter ++;
 					
 					if (counter % 10000 == 0) {
-						FileHelper.outputToFile(outputPath + "SelectedData/SelectedMethodTokens.txt", tokensBulder, true);
+						FileHelper.outputToFile(outputPath1 + "SelectedMethodTokens.txt", tokensBulder, true);
 						tokensBulder.setLength(0);
-						FileHelper.outputToFile(outputPath + "SelectedData/SelectedMethodInfo.txt", methodInfoBuilder, true);
+						FileHelper.outputToFile(outputPath1 + "SelectedMethodInfo.txt", methodInfoBuilder, true);
 						methodInfoBuilder.setLength(0);
 					}
 				}
@@ -191,15 +196,18 @@ public class DataInitializer {
 		scanner.close();
 		fis.close();
 		
-		FileHelper.outputToFile(outputPath + "SelectedData/SelectedSizes.csv", sizesBuilder, false);
-		FileHelper.outputToFile(outputPath + "SelectedData/SelectedMethodTokens.txt", tokensBulder, true);
+		FileHelper.outputToFile(outputPath1 + "SelectedSizes.csv", sizesBuilder, false);
+		FileHelper.outputToFile(outputPath1 + "SelectedMethodTokens.txt", tokensBulder, true);
 		tokensBulder.setLength(0);
-		FileHelper.outputToFile(outputPath + "SelectedData/SelectedMethodInfo.txt", methodInfoBuilder, true);
+		FileHelper.outputToFile(outputPath1 + "SelectedMethodInfo.txt", methodInfoBuilder, true);
 		methodInfoBuilder.setLength(0);
+		
+		File tokensFile_ = new File(Configuration.SELECTED_DATA_PATH + "TrainingData/Tokens_MaxSize=" + this.maxSize + ".txt");
+		if (!tokensFile_.exists()) FileHelper.outputToFile(tokensFile_, "", false);
 
-		FileHelper.outputToFile(outputPath + "RenamedMethods/MethodTokens.txt", tokensBuilderOfSelectedRenamedMethods, false);
-		FileHelper.outputToFile(outputPath + "RenamedMethods/MethodInfo.txt", methodInfoBuilderOfSelectedRenamedMethods, false);
-		FileHelper.outputToFile(outputPath + "RenamedMethods/ParsedMethodNames.txt", selectedParseRenamedMethodNames, false);
+		FileHelper.outputToFile(outputPath2 + "MethodTokens.txt", tokensBuilderOfSelectedRenamedMethods, false);
+		FileHelper.outputToFile(outputPath2 + "MethodInfo.txt", methodInfoBuilderOfSelectedRenamedMethods, false);
+		FileHelper.outputToFile(outputPath2 + "ParsedMethodNames.txt", selectedParseRenamedMethodNames, false);
 		System.out.println("Number of further selected renamed methods:" + furtherSelecteRenamedMethodIndexes.size());
 		System.out.println("Number of selected training methods:" + this.selectedMethodInfoOfAllMethods.size());
 		System.out.println("Renamed methods: " + a);
@@ -209,7 +217,7 @@ public class DataInitializer {
 	}
 	
 	private void exportMethodBodies() throws IOException {
-		String selectedMethodsPath = outputPath + "SelectedData/method_bodies.txt";
+		String selectedMethodsPath = outputPath1 + "method_bodies.txt";
 		new File(selectedMethodsPath).delete();
 		
 		String methodBodyFile = inputPath + "method_bodies.txt";
@@ -287,11 +295,11 @@ public class DataInitializer {
 			counter ++;
 			testMethods.append(singleMethod.toString().replace("@Override", "")).append("\n");
 		}
-		FileHelper.outputToFile(outputPath + "RenamedMethods/method_bodies/TestingMethods.java", "public class TestingMethods {\n" + testMethods.toString() + "}", false);
+		FileHelper.outputToFile(outputPath2 + "method_bodies/TestingMethods.java", "public class TestingMethods {\n" + testMethods.toString() + "}", false);
 		System.out.println("Testing methods: " + counter);
 	}
 
-	private List<Integer> readSizes(String sizesFile) throws IOException {
+	private List<Integer> readSizes(File sizesFile) throws IOException {
 		List<Integer> sizesList = new ArrayList<>();
 		String sizesContent = FileHelper.readFile(sizesFile);
 		BufferedReader reader = new BufferedReader(new StringReader(sizesContent));
@@ -304,204 +312,4 @@ public class DataInitializer {
 		return sizesList;
 	}
 
-	/**
-	 * Randomly select training data and testing data.
-	 * Training data: 90%.
-	 * Testing data: 10%.
-	 * 
-	 * @param inputPath
-	 * @param outputPath
-	 * @throws IOException
-	 */
-	public void selectTrainingAndTestingData() throws IOException {
-		String trainingDataPath = outputPath + "TrainingData/";
-		String testingDataPath = outputPath + "TestingData/";
-		String tokensFileName = "Tokens_MaxSize=" + this.maxSize + ".txt";
-		String methodInfoFileName = "MethodsInfo.txt";
-		
-		StringBuilder trainingTokensBuilder = new StringBuilder();
-		StringBuilder testingTokensBuilder = new StringBuilder();
-		StringBuilder trainingInfoBuilder = new StringBuilder();
-		StringBuilder testingInfoBuilder = new StringBuilder();
-		
-		int numberOfMethods = this.selectedMethodInfoOfAllMethods.size();
-		int numberOfTrainingMethods = numberOfMethods * 90 / 100; // Training data: 90%
-		numberOfTrainingMethods /= Configuration.BATCH_SIZE;
-		numberOfTrainingMethods *= Configuration.BATCH_SIZE;
-		int numberOfTestingMethods = numberOfMethods - numberOfTrainingMethods;
-		
-		Random random = new Random();
-		for (int i = 0; i < numberOfMethods; i ++) {
-			String tokens = this.selectedTokenVecotrsOfAllMethods.get(i);
-			String methodInfo = this.selectedMethodInfoOfAllMethods.get(i);
-			// Randomly select training data and testing data.
-			int nextNumber = random.nextInt(10000);
-			if (nextNumber < 9000) {
-				if (numberOfTrainingMethods > 0) {// Training Data.
-					trainingTokensBuilder.append(tokens).append("\n");
-					trainingInfoBuilder.append(methodInfo).append("\n");
-					trainingMethodIndexes.add(selectMethodIndexes.get(i));
-				} else {// Testing data.
-					testingTokensBuilder.append(tokens).append("\n");
-					testingInfoBuilder.append(methodInfo).append("\n");
-					testingMethodIndexes.add(selectMethodIndexes.get(i));
-				}
-				numberOfTrainingMethods --;
-			} else {
-				if (numberOfTestingMethods > 0) {// Testing data.
-					testingTokensBuilder.append(tokens).append("\n");
-					testingInfoBuilder.append(methodInfo).append("\n");
-					testingMethodIndexes.add(selectMethodIndexes.get(i));
-				} else {// Training Data.
-					trainingTokensBuilder.append(tokens).append("\n");
-					trainingInfoBuilder.append(methodInfo).append("\n");
-					trainingMethodIndexes.add(selectMethodIndexes.get(i));
-				}
-				numberOfTestingMethods --;
-			}
-		}
-		
-		FileHelper.outputToFile(trainingDataPath + tokensFileName, trainingTokensBuilder, true);
-		trainingTokensBuilder.setLength(0);
-		FileHelper.outputToFile(testingDataPath + tokensFileName, testingTokensBuilder, true);
-		testingTokensBuilder.setLength(0);
-		FileHelper.outputToFile(trainingDataPath + methodInfoFileName, trainingInfoBuilder, true);
-		trainingInfoBuilder.setLength(0);
-		FileHelper.outputToFile(testingDataPath + methodInfoFileName, testingInfoBuilder, true);
-		testingInfoBuilder.setLength(0);
-		
-		System.out.println("Number of selected methods:" + numberOfMethods);
-		System.out.println("Number of selected methods:" + selectMethodIndexes.size());
-		System.out.println("Number of selected methods:" + trainingMethodIndexes.size() + "==" + testingMethodIndexes.size());
-	}
-
-	public void exportTrainingAndTestingMethodBodies() throws IOException {
-		String trainingDataPath = outputPath + "TrainingData/method_bodies.txt";
-		String testingDataPath = outputPath + "TestingData/method_bodies.txt";
-		String selectedMethodsPath = outputPath + "SelectedData/method_bodies.txt";
-		
-		String methodBodyFile = inputPath + "method_bodies.txt";
-		FileInputStream fis = new FileInputStream(methodBodyFile);
-		Scanner scanner = new Scanner(fis);
-		StringBuilder singleMethod = new StringBuilder();
-		StringBuilder trainingMethods = new StringBuilder();
-		StringBuilder testingMethods = new StringBuilder();
-		StringBuilder selectedMethods = new StringBuilder();
-		int index = -1;
-		boolean isMethodBody = false;
-//		String methodFile1 = "";
-//		String methodFile2 = "";
-		DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-		while (scanner.hasNextLine()) {
-			String line = scanner.nextLine();
-			if ("#METHOD_BODY#========================".equals(line)) {
-//				if (isMethodBody) {
-				if (singleMethod.length() > 0) {
-					if (trainingMethodIndexes.contains(index)) {
-						trainingMethods.append(singleMethod).append("\n");
-						selectedMethods.append(singleMethod).append("\n");//.toString().replace("@Override", "")
-					} else if (testingMethodIndexes.contains(index)) {
-						testingMethods.append(singleMethod).append("\n");
-						selectedMethods.append(singleMethod).append("\n");//.toString().replace("@Override", "")
-					}
-//					if (selectMethodIndexes.contains(index)) {
-//						selectedMethods.append(singleMethod).append("\n");//.toString().replace("@Override", "")
-//					}
-					if (index % 10000 == 0) {
-						FileHelper.outputToFile(trainingDataPath, trainingMethods, true);
-						FileHelper.outputToFile(testingDataPath, testingMethods, true);
-						FileHelper.outputToFile(selectedMethodsPath, selectedMethods, true);
-						trainingMethods.setLength(0);
-						testingMethods.setLength(0);
-						selectedMethods.setLength(0);
-						Date date = new Date();
-						System.out.println(dateFormat.format(date) + "===" + index); //2016/11/16 12:08:43
-					}
-				}
-				singleMethod.setLength(0);
-				isMethodBody = false;
-				index ++;
-//			} else {
-//				if (isMethodBody) {
-////					singleMethod.append(line).append("\n");
-//				} else {
-//					//hibernate-metamodelgen:org.hibernate.jpamodelgen.util:StringUtil:
-////					String[] elements = line.split(":");
-////					methodFile2 = elements[0];// + "/" + elements[1].replace(".", "") + elements[2];
-////					if (methodFile1.equals("")) methodFile1 = methodFile2;
-////					else if (!methodFile1.equals(methodFile2)) { // output to file.
-////						if (trainingMethods.length() > 0) FileHelper.outputToFile(trainingDataPath + methodFile1 + ".java", "public class MethodBody {\n" + trainingMethods.toString() + "}", true);
-////						if (testingMethods.length() > 0) FileHelper.outputToFile(testingDataPath + methodFile1 + ".java", "public class MethodBody {\n" + testingDataPath.toString() + "}", true);
-////						FileHelper.outputToFile(selectedMethodsPath + methodFile1 + "/TrainingMethods.java", "public class TrainingMethods {\n" + selectedMethods.toString() + "}", true);
-////						trainingMethods.setLength(0);
-////						testingMethods.setLength(0);
-////						selectedMethods.setLength(0);
-////						methodFile1 = methodFile2;
-////					}
-//					isMethodBody = true;
-//				}
-			}
-			singleMethod.append(line).append("\n");
-		}
-		if (trainingMethodIndexes.contains(index)) {
-			trainingMethods.append(singleMethod).append("\n");
-			selectedMethods.append(singleMethod).append("\n");
-		} else if (testingMethodIndexes.contains(index)) {
-			testingMethods.append(singleMethod).append("\n");
-			selectedMethods.append(singleMethod).append("\n");
-		}
-//		if (selectMethodIndexes.contains(index)) {
-//			selectedMethods.append(singleMethod).append("\n");//.toString().replace("@Override", "")
-//		}
-		scanner.close();
-		fis.close();
-
-//		FileHelper.outputToFile(trainingDataPath + methodFile2 + ".java", "public class MethodBody {\n" + trainingMethods.toString() + "}", true);
-//		FileHelper.outputToFile(testingDataPath + methodFile2 + ".java", "public class MethodBody {\n" + testingDataPath.toString() + "}", true);
-//		FileHelper.outputToFile(selectedMethodsPath +  methodFile2 + "/TrainingMethods.java", "public class TrainingMethods {\n" + selectedMethods.toString() + "}", true);
-		FileHelper.outputToFile(trainingDataPath, trainingMethods, true);
-		FileHelper.outputToFile(testingDataPath, testingMethods, true);
-		FileHelper.outputToFile(selectedMethodsPath, selectedMethods, true);
-		trainingMethods.setLength(0);
-		testingMethods.setLength(0);
-		selectedMethods.setLength(0);
-		
-		
-		// Export the method bodies of further selected renamed methods.
-		String renamedMethodBodyFile = this.renamedMethodsPath + "MethodBodies.txt";
-		fis = new FileInputStream(renamedMethodBodyFile);
-		scanner = new Scanner(fis);
-		index = -1;
-		int counter = 0;
-		isMethodBody = false;
-		singleMethod = new StringBuilder();
-		StringBuilder testMethods = new StringBuilder();
-		while (scanner.hasNextLine()) {
-			String line = scanner.nextLine();
-			if ("#METHOD_BODY#========================".equals(line)) {
-				if (isMethodBody) {
-					if (this.furtherSelecteRenamedMethodIndexes.contains(index)) {
-						testMethods.append(singleMethod.toString().replace("@Override", "")).append("\n");
-						counter ++;
-					}
-				}
-				singleMethod.setLength(0);
-				isMethodBody = false;
-				index ++;
-			} else {
-				if (isMethodBody) {
-					singleMethod.append(line).append("\n");
-				} else isMethodBody = true;
-			}
-		}
-		scanner.close();
-		fis.close();
-		if (this.furtherSelecteRenamedMethodIndexes.contains(index)) {
-			counter ++;
-			testMethods.append(singleMethod.toString().replace("@Override", "")).append("\n");
-		}
-		FileHelper.outputToFile(outputPath + "RenamedMethods/method_bodies/TestingMethods.java", "public class TestingMethods {\n" + testMethods.toString() + "}", false);
-		System.out.println("Testing methods: " + counter);
-	}
-	
 }

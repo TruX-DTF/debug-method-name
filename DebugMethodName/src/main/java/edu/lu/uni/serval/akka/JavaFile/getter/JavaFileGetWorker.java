@@ -46,7 +46,7 @@ public class JavaFileGetWorker extends UntypedActor {
 				}
 			}
 			
-			log.info("Worker #" + workerId +" Finish of reading java files... ========== " + javaProjects.get(0).getParentFile().getName() + " = " + counter);
+			log.debug("Worker #" + workerId +" Finish of reading java files... ========== " + javaProjects.get(0).getParentFile().getName() + " = " + counter);
 			this.getSender().tell("SHUT_DOWN", getSelf());
 		} else {
 			unhandled(message);
@@ -62,7 +62,7 @@ public class JavaFileGetWorker extends UntypedActor {
 	private void obtainAllJavaFiles(File projectPath) {
 		StringBuilder pathesBuilder = new StringBuilder();
 		pathesBuilder = getAllFiles(projectPath, ".java", projectPath.getPath().length() + 1);
-		String javaFileNamesPath = Configuration.JAVA_FILES_PATH + projectPath.getParentFile().getName() + ".txt";
+		String javaFileNamesPath = Configuration.JAVA_FILES_PATH + projectPath.getName() + ".txt";
 		FileHelper.outputToFile(javaFileNamesPath, pathesBuilder, false);
 		pathesBuilder.setLength(0);
 	}

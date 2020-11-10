@@ -20,8 +20,8 @@ import edu.lu.uni.serval.utils.FileHelper;
  *
  */
 public class TokensEmbedder {
-	String inputPath;
-	String outputPath;
+	public String inputPath;
+	public String outputPath;
 	
 	/**
 	 * Merge training data and testing data.
@@ -61,31 +61,43 @@ public class TokensEmbedder {
 	public void vectorizedData(boolean benchMark) throws IOException {
 		String embeddedTokensFile = inputPath + "embedding/embeddedTokens.txt";
 		Map<String, String> embeddedTokens = readEmbeddedTokens(embeddedTokensFile);
-		File[] files = new File(inputPath + "TrainingData/").listFiles();
-		File trainingDataFile = null;
-		int maxSize = 0;
-		for (File file : files) {
-			String fileName = file.getName();
-			if (fileName.startsWith("Tokens_MaxSize=")) {
-				maxSize = Integer.parseInt(fileName.substring("Tokens_MaxSize=".length(), fileName.lastIndexOf(".txt")));
-				trainingDataFile = file;
-			}
-		}
-		
 		StringBuilder zeroVector = new StringBuilder();
 		int size = Configuration.SIZE_OF_EMBEDDED_VECTOR - 1;
 		for (int i = 0; i < size; i ++) {
 			zeroVector.append("0,");
 		}
 		zeroVector.append("0");
-		System.out.println(maxSize);
 		
-		File testingDataFile = new File(inputPath + "TestingData/" + trainingDataFile.getName());
-		vectorizeTokenVector(trainingDataFile, embeddedTokens, maxSize, zeroVector, outputPath + "TrainingData_");
-		vectorizeTokenVector(testingDataFile, embeddedTokens, maxSize, zeroVector, outputPath + "TestingData_");
 		if (benchMark) {
+			File[] files = new File(inputPath + "SelectedData/TrainingData/").listFiles();
+			int maxSize = 0;
+			File trainingDataFile = null;
+			for (File file : files) {
+				String fileName = file.getName();
+				if (fileName.startsWith("Tokens_MaxSize=")) {
+					maxSize = Integer.parseInt(fileName.substring("Tokens_MaxSize=".length(), fileName.lastIndexOf(".txt")));
+					trainingDataFile = file;
+				}
+			}
+			vectorizeTokenVector(trainingDataFile, embeddedTokens, maxSize, zeroVector, outputPath + "TrainingData_");
+			
 			File renamedMethodsFile = new File(inputPath + "RenamedMethods/MethodTokens.txt");
 			vectorizeTokenVector(renamedMethodsFile, embeddedTokens, maxSize, zeroVector, outputPath + "RenamedData_");
+		} else {
+			File[] files = new File(inputPath + "TrainingData/").listFiles();
+			File trainingDataFile = null;
+			int maxSize = 0;
+			for (File file : files) {
+				String fileName = file.getName();
+				if (fileName.startsWith("Tokens_MaxSize=")) {
+					maxSize = Integer.parseInt(fileName.substring("Tokens_MaxSize=".length(), fileName.lastIndexOf(".txt")));
+					trainingDataFile = file;
+				}
+			}
+			vectorizeTokenVector(trainingDataFile, embeddedTokens, maxSize, zeroVector, outputPath + "TrainingData_");
+			
+			File testingDataFile = new File(inputPath + "TestingData/" + trainingDataFile.getName());
+			vectorizeTokenVector(testingDataFile, embeddedTokens, maxSize, zeroVector, outputPath + "TestingData_");
 		}
 	}
 

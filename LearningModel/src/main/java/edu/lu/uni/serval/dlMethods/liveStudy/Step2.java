@@ -2,6 +2,7 @@ package edu.lu.uni.serval.dlMethods.liveStudy;
 
 import java.io.IOException;
 
+import edu.lu.uni.serval.dlMethods.TokensEmbedder;
 import edu.lu.uni.serval.utils.FileHelper;
 
 /**

@@ -4,24 +4,26 @@ import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
 import edu.lu.uni.serval.sricmn.akka.EvaluateActor;
 
+/**
+ * Sport and refactor inconsistent method names.
+ * 
+ * @author kui.liu
+ *
+ */
 public class Main {
 
 	public static void main(String[] args) {
-		if (args.length != 11) {
-				System.out.println("Arguments: <nEpochs>, <threshold>, <true/false>, <1/2>, <dataPath>, <numOfWorkers1>, <numOfWorkers2>, <similarityType>, <isSubToken>, <considerSynonyms>, <needAllSynonyms>");
-				System.exit(0);
-		}
-		int nEpochs = Integer.valueOf(args[0]);// 1, 10, 20.
-		int topNum = Integer.valueOf(args[1]); // 100.
-		boolean considerReturnType = Boolean.valueOf(args[2]);// true or false: method body with return types or not.
-		int fileId = Integer.valueOf(args[3]); // 1 or 2. 1: method names without return types. 2: method names with return types.
-		String inputPath = args[4];
-		int numberOfTestingWorkers = Integer.valueOf(args[5]);// 50.
-		int numberOfRenamedWorkers = Integer.valueOf(args[6]);// 100.
-		int similarityType = Integer.valueOf(args[7]); // 0-15.
-		boolean isSubToken = Boolean.valueOf(args[8]);// true or false.
-		boolean considerSynonyms = Boolean.valueOf(args[9]);// true or false.
-		boolean needAllSynonyms = Boolean.valueOf(args[10]);// true or false.
+		int nEpochs = 1;// 1, 10, 20.
+		int topNum = 100;
+		boolean considerReturnType = false;// true or false: method body with return types or not.
+		int fileId = 2; // 1 or 2. 1: method names without return types. 2: method names with return types.
+		String inputPath = Configuration.OUTPUT_PATH;
+		int numberOfTestingWorkers = 50;
+		int numberOfRenamedWorkers = 100;
+		int similarityType = 0; // 0-15.
+		boolean isSubToken = false; // true or false.
+		boolean considerSynonyms = false;
+		boolean needAllSynonyms = false;
 		Main akkaEval = new Main();
 		akkaEval.evaluate(nEpochs, topNum, considerReturnType, fileId, inputPath, numberOfTestingWorkers, numberOfRenamedWorkers, 
 				similarityType, isSubToken, considerSynonyms, needAllSynonyms);
