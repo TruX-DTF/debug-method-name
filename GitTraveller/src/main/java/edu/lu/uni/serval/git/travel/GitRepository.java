@@ -554,7 +554,7 @@ public class GitRepository {
 			List<CommitDiffEntry> d = getDiffEntriesForEachCommit(commit);
 			if (!d.isEmpty()) {
 				diffentries.addAll(d);
-				createFilesForGumTree(d, true);
+//				createFilesForGumTree(d, true);
 			}
 		}
 		return diffentries;

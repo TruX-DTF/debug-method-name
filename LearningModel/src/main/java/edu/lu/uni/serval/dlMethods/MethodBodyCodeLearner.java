@@ -1,14 +1,21 @@
 package edu.lu.uni.serval.dlMethods;
 
+import java.io.BufferedOutputStream;
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import org.datavec.api.records.reader.RecordReader;
 import org.datavec.api.records.reader.impl.csv.CSVRecordReader;
 import org.datavec.api.split.FileSplit;
 import org.deeplearning4j.datasets.datavec.RecordReaderDataSetIterator;
+import org.deeplearning4j.nn.api.Model;
 import org.deeplearning4j.nn.api.OptimizationAlgorithm;
 import org.deeplearning4j.nn.conf.MultiLayerConfiguration;
 import org.deeplearning4j.nn.conf.NeuralNetConfiguration;
@@ -18,6 +25,7 @@ import org.deeplearning4j.nn.conf.layers.ConvolutionLayer;
 import org.deeplearning4j.nn.conf.layers.DenseLayer;
 import org.deeplearning4j.nn.conf.layers.OutputLayer;
 import org.deeplearning4j.nn.conf.layers.SubsamplingLayer;
+import org.deeplearning4j.nn.graph.ComputationGraph;
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork;
 import org.deeplearning4j.nn.weights.WeightInit;
 import org.deeplearning4j.optimize.listeners.ScoreIterationListener;
@@ -26,12 +34,14 @@ import org.nd4j.linalg.activations.Activation;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.dataset.DataSet;
 import org.nd4j.linalg.dataset.api.iterator.DataSetIterator;
+import org.nd4j.linalg.factory.Nd4j;
 import org.nd4j.linalg.lossfunctions.LossFunctions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import edu.lu.uni.Configuration;
 import edu.lu.uni.serval.utils.FileHelper;
+import lombok.NonNull;
 
 /**
  * Feature learning.
@@ -256,9 +266,13 @@ public class MethodBodyCodeLearner {
 	        
 	        //Save the model
 	        String modelFile = outputPath + fileName.substring(0, fileName.lastIndexOf(".")) + ".zip";
-	        File locationToSave = new File(modelFile);  //Where to save the network. Note: the file is in .zip format - can be opened externally
+//	        File locationToSave = new File(modelFile);  //Where to save the network. Note: the file is in .zip format - can be opened externally
 	        boolean saveUpdater = true;    //Updater: i.e., the state for Momentum, RMSProp, Adagrad etc. Save this if you want to train your network more in the future
-	        ModelSerializer.writeModel(model, locationToSave, saveUpdater);
+//	        ModelSerializer.writeModel(model, locationToSave, saveUpdater);
+	        try (BufferedOutputStream stream = new BufferedOutputStream(new FileOutputStream(modelFile))) {
+	        	writeModel(model, stream, saveUpdater);
+	        }
+	        
 	        log.info("****************Extracting features finished****************");
 		}
 		
@@ -290,6 +304,57 @@ public class MethodBodyCodeLearner {
 			FileHelper.outputToFile(featureFileName, featuresOfTestingData, false);
 
 			log.info("****************Deep learning finished********************");
+		}
+		
+		public void writeModel(@NonNull Model model, @NonNull OutputStream stream, boolean saveUpdater)
+                throws IOException {
+		    ZipOutputStream zipfile = new ZipOutputStream(stream);
+		
+		    // Save configuration as JSON
+		    String json = "";
+		    if (model instanceof MultiLayerNetwork) {
+		        json = ((MultiLayerNetwork) model).getLayerWiseConfigurations().toJson();
+		    } else if (model instanceof ComputationGraph) {
+		        json = ((ComputationGraph) model).getConfiguration().toJson();
+		    }
+		    ZipEntry config = new ZipEntry("configuration.json");
+		    zipfile.putNextEntry(config);
+		    zipfile.write(json.getBytes());
+		
+		    // Save parameters as binary
+		    ZipEntry coefficients = new ZipEntry("coefficients.bin");
+		    zipfile.putNextEntry(coefficients);
+		    DataOutputStream dos = new DataOutputStream(new BufferedOutputStream(zipfile));
+		    try {
+		        Nd4j.write(model.params(), dos);
+		    } finally {
+		        dos.flush();
+		        if(!saveUpdater) dos.close();
+		    }
+		
+		    if (saveUpdater) {
+		        INDArray updaterState = null;
+		        if (model instanceof MultiLayerNetwork) {
+		            updaterState = ((MultiLayerNetwork) model).getUpdater().getStateViewArray();
+		        } else if (model instanceof ComputationGraph) {
+		            updaterState = ((ComputationGraph) model).getUpdater().getStateViewArray();
+		        }
+		
+		        if (updaterState != null && updaterState.length() > 0) {
+		            ZipEntry updater = new ZipEntry("updaterState.bin");
+		            zipfile.putNextEntry(updater);
+		
+		            try {
+		                Nd4j.write(updaterState, dos);
+		            } finally {
+		                dos.flush();
+		                dos.close();
+		            }
+		        }
+		    }
+		
+		    zipfile.flush();
+		    zipfile.close();
 		}
 	}
 }

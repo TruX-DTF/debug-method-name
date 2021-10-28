@@ -86,7 +86,7 @@ public class ParseWorker extends UntypedActor {
 				// schedule the work
 				final Future<?> future = executor.submit(new RunnableParser(prevFile, revFile, diffentryFile, parser));
 				try {
-					future.get(150L, TimeUnit.SECONDS);
+					future.get(Configuration.Timeout, TimeUnit.SECONDS);
 					// project_name : old_commit_id : new_commit_id : file_path : old_method_name : new_method_name : old_line : new_line : return_type : arguments : tokens.
 					List<String> renamedMethods = parser.getRenamedMethods();
 					if (renamedMethods.isEmpty()) {

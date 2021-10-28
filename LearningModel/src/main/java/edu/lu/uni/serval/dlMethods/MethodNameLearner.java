@@ -25,12 +25,15 @@ public class MethodNameLearner {
 		
 		String trainingData = Configuration.SELECTED_DATA_PATH  + "SelectedMethodInfo.txt";
 		String featureLearningData1 = outputPath + "FeatureLearningData1.txt"; // without return type.
+		String featureLearningData2 = outputPath + "FeatureLearningData2.txt"; // with return type.
 		String returnTypeOfTestingFile = Configuration.SELECTED_RENAMED_DATA_PATH + "MethodInfo.txt";
 		
-		if (!new File(testingMethodNamesFile).exists()) {
-			learner.prepareFeatureLearningData(trainingData, testingMethodNamesFile, featureLearningData1, null, returnTypeOfTestingFile);
-		}
+		learner.prepareFeatureLearningData(trainingData, testingMethodNamesFile, featureLearningData1, featureLearningData2, returnTypeOfTestingFile);
+		
 		learner.learnFeatures(new File(featureLearningData1), outputPath + "MethodNameFeatures_1_Size=" + learner.SIZE + ".txt");
+		learner.learnFeatures(new File(featureLearningData2), outputPath + "MethodNameFeatures_2_Size=" + learner.SIZE + ".txt");
+		learner.learnFeatures(new File(featureLearningData1 + ".bak"), outputPath + "MethodNameFeatures_1_Size=" + learner.SIZE + ".txt.bak");
+		learner.learnFeatures(new File(featureLearningData2 + ".bak"), outputPath + "MethodNameFeatures_2_Size=" + learner.SIZE + ".txt.bak");
 	}
 	
 }

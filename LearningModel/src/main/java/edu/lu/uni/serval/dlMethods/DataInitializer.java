@@ -11,6 +11,7 @@ import java.util.Locale;
 import java.util.Scanner;
 
 import edu.lu.uni.Configuration;
+import edu.lu.uni.serval.dlMethods.DataPrepare.CommonFirstTokens;
 import edu.lu.uni.serval.dlMethods.DataPrepare.RenamedMethodSelector;
 import edu.lu.uni.serval.utils.Distribution;
 import edu.lu.uni.serval.utils.Distribution.MaxSizeType;
@@ -68,17 +69,17 @@ public class DataInitializer {
 	
 	public void initializeData() throws IOException {
 		// Common first tokens of all methods.
-//		CommonFirstTokens cft = new CommonFirstTokens();
-//		cft.inputPath = this.inputPath;
-//		cft.outputPath = this.outputPath1;
-//		cft.QUANTITY = this.QUANTITY;
-//		// Read the distribution of first tokens to get the common first tokens.
-//		cft.readTokens();
-//		// Select common first tokens.
-//		cft.outputTokens();
-//		this.allFirstTokensList = cft.allFirstTokensList;
-//		this.tokenVectorOfAllParsedMethodNames = cft.tokenVectorOfAllParsedMethodNames;
-//		this.commonFirstTokens = cft.commonFirstTokens;
+		CommonFirstTokens cft = new CommonFirstTokens();
+		cft.inputPath = this.inputPath;
+		cft.outputPath = this.outputPath1;
+		cft.QUANTITY = this.QUANTITY;
+		// Read the distribution of first tokens to get the common first tokens.
+		cft.readTokens();
+		// Select common first tokens.
+		cft.outputTokens();
+		this.allFirstTokensList = cft.allFirstTokensList;
+		this.tokenVectorOfAllParsedMethodNames = cft.tokenVectorOfAllParsedMethodNames;
+		this.commonFirstTokens = cft.commonFirstTokens;
 		
 		
 		File sizesFile = new File(Configuration.TOKENIZED_METHODS_PATH + "sizes.csv");
@@ -115,7 +116,7 @@ public class DataInitializer {
 	 * @throws IOException 
 	 */
 	public void selectMethod() throws IOException {
-		String tokensFile = inputPath + "tokens.list";
+		String tokensFile = inputPath + "tokens.txt";
 		this.sizesListOfAllMethodBodyTokenVectors = readSizes(new File(inputPath + "sizes.csv"));
 		
 		StringBuilder tokensBulder = new StringBuilder();
@@ -149,7 +150,7 @@ public class DataInitializer {
 					test ++;
 					continue;
 				}
-				String tokens = lineStr.substring(sharpPosition + 2, lineStr.length() - 1).replace(", ", " ");
+				String tokens = lineStr.substring(sharpPosition + 1, lineStr.length() - 1).replace(", ", " ");
 				int renamedIndex = this.methodInfoOfRenamedMethods.indexOf(methodInfo);
 				if (renamedIndex >= 0) {
 					a ++;

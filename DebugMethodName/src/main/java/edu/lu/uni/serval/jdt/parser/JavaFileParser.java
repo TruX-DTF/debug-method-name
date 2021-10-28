@@ -232,7 +232,7 @@ public class JavaFileParser {
 			if (methodDeclarationLabel.endsWith("@@Argus:null")) {
 				argus = "null";
 			} else {
-				argus = methodDeclarationLabel.substring(methodDeclarationLabel.indexOf("@@Argus:") + 8, methodDeclarationLabel.length() - 1).replace(" ", "").replace("+", "#");
+				argus = methodDeclarationLabel.substring(methodDeclarationLabel.indexOf("@@Argus:") + 8, methodDeclarationLabel.length() - 1).replace(" ", "");
 				int expIndex = argus.indexOf("@@Exp:");
 				if (expIndex > 0) {
 					argus = argus.substring(0, expIndex - 1);

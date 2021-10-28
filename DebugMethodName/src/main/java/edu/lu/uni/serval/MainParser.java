@@ -5,13 +5,10 @@ import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
-import edu.lu.uni.serval.akka.JavaFile.getter.JavaFileGetter;
 import edu.lu.uni.serval.akka.method.parser.MultipleShreadParser;
 import edu.lu.uni.serval.method.parser.MethodParser;
-import edu.lu.uni.serval.method.parser.util.Distribution;
 import edu.lu.uni.serval.utils.FileHelper;
 
 /**
@@ -26,49 +23,24 @@ public class MainParser {
 		MainParser parser = new MainParser();
 		
 		try {
-			// Parse methods (i.e., bodies and names).
 			/*
-			 *  Choice 1. Parse Java code methods with one single thread.
-			 */
-//			example.parseMethodsWithSingleThread();
-			/*
-			 *  Choice 2. Parse Java code methods with multiple threads.
-			 *  One thread is used to prase one project.
-			 */
-//			parser.parseMethodsWithMultipleThreads();
-//			Distribution dis = new Distribution();
-//			List<File> files = FileHelper.getAllFiles(Configuration.TOKENIZED_METHODS_PATH + "sizes/", ".csv");
-//			int sheetNo = 1;
-//			for (File file : files) {
-//				dis.readDistribution(file, sheetNo);
-//				sheetNo ++;
-//			}
-			
-			/* 
-			 * Choice 3. Parse Java code methods with multiple threads.
-			 * The input is all obtained Java code files of all Java projects.
-			 */
-			String allJavaFilesFile = Configuration.JAVA_FILES_FILE;
-			JavaFileGetter.main(null);
-			parser.parseMethodsWithMultipleThreads(allJavaFilesFile);
-			
-			/*
-			 * Choice 4. Parse Java code methods with multiple threads.
+			 * Parse Java code methods with multiple threads.
 			 * The input is all obtained Java code files of one Java project.
 			 * It needs to merge all output data if using this choice.
+			 * 
 			 */
-//			List<String> projectNames = readProjects();
-//			int i = Integer.valueOf(args[0]); // 0 - 429: 430 Java projects.
-//			if (i >= projectNames.size()) {
-//				System.out.println("Wrong parameter: " + args[0]);
-//				return;
-//			}
-//			String projectName = projectNames.get(i);
-//			String project = Configuration.JAVA_FILES_PATH + projectName + ".txt";
-//			if (! new File(project).exists()) {
-//				project = Configuration.JAVA_REPOS_PATH + projectName;
-//			}
-//			parser.parseMethodsWithMultipleThreads(project, projectName);
+			List<String> projectNames = readProjects();
+			int i = Integer.valueOf(args[0]); // 0 - 429: 430 Java projects.
+			if (i >= projectNames.size()) {
+				System.out.println("Wrong parameter: " + args[0]);
+				return;
+			}
+			String projectName = projectNames.get(i);
+			String project = Configuration.JAVA_FILES_PATH + projectName + ".txt";
+			if (! new File(project).exists()) {
+				project = Configuration.JAVA_REPOS_PATH + projectName;
+			}
+			parser.parseMethodsWithMultipleThreads(project, projectName);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

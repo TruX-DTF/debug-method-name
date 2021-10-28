@@ -6,4 +6,5 @@ public class Configuration {
 	public static final String OUTPUT_PATH = "../Data/Output/";
 	public static final String COMMIT_DIFF_PATH = OUTPUT_PATH + "Commit_Diffs/";
 	public static final String RENAMED_METHODS_PATH = OUTPUT_PATH + "RenamedMethods/";
+	public static final Long Timeout = 300L;
 }

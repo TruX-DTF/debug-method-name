@@ -30,10 +30,9 @@ public class MethodNameFeatureLearner {
 
 	public static void main(String[] args) throws IOException {
 		MethodNameFeatureLearner learner = new MethodNameFeatureLearner();
-		String rootPath = Configuration.ROOT_PATH;
 		String inputPath = Configuration.DL_DATA_PATH;
 		String methodNameTokensFile = Configuration.RENAMED_METHODS_PATH + "ParsedMethodNames.txt";
-		String outputPath = rootPath + "Detect_Data/";
+		String outputPath = Configuration.EVALUATION_DATA_PATH;
 		// Selecting data for method name feature learning.
 		String testingMethodNamesFile = outputPath + "TestingMethodNames.txt";
 		learner.prepareData(methodNameTokensFile, testingMethodNamesFile, outputPath + "TestingLabels.txt");
