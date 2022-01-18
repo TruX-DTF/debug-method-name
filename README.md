@@ -37,7 +37,7 @@ How to run debug-method-name
   
 5. Prepare data: Parse methods in Java projects.
    **Note that:** it will take **a long time and a big space** to prepare the data for this experiment, we recommend to use the data we already have to proceed the following steps.
-  - `cd ../DebugMethodName'
+  - `cd ../DebugMethodName`
   - `mvn dependency:copy-dependencies`
   - `mvn package`
   - `mv target/DebugMethodName-0.0.1-SNAPSHOT.jar target/dependency`
@@ -57,5 +57,5 @@ How to run debug-method-name
   - `java -cp "target/dependency/*" -Xmx1024g edu.lu.uni.serval.dlMethods.MethodNameLearner` Learn method name features with ParagraphVectors.
 
 8. Spot and Refactor inconsistent method names:
-  - `cd ../DebugMethodName'
+  - `cd ../DebugMethodName`
   - `java -cp "target/dependency/*" -Xmx8g edu.lu.uni.serval.Main`
